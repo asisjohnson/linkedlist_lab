@@ -86,15 +86,152 @@ void list_add_to_front(list_t *l, elem value) {
      cur_node->next = head;
      head = cur_node;
 }
+
 void list_add_at_index(list_t *l, elem value, int index) {
-  
+  list_t *newNode = (list_t*)malloc(sizeof(list_t));
+    newNode->data = value;
+
+    if (index == 0 || l == NULL) {
+        newNode->next = l;
+        l = newNode;
+        return;
+    }
+
+    list_t *current = l;
+    int currentIndex = 0;
+
+    while (current != NULL && currentIndex < index - 1) {
+        current = current->next;
+        currentIndex++;
+    }
+
+    if (current == NULL) {
+        free(newNode); 
+        return;
+    }
+
+    newNode->next = current->next;
+    current->next = newNode;
 }
 
-elem list_remove_from_back(list_t *l) { return -1; }
-elem list_remove_from_front(list_t *l) { return -1; }
-elem list_remove_at_index(list_t *l, int index) { return -1; }
+elem list_remove_from_back(list_t *l) {
+  if (*l == NULL) {
+        return -1;
+    }
 
-bool list_is_in(list_t *l, elem value) { return false; }
-elem list_get_elem_at(list_t *l, int index) { return -1; }
-int list_get_index_of(list_t *l, elem value) { return -1; }
+    int removedValue;
+    list_t *current = *l;
+    list_t *previous = NULL;
+
+    while (current->next != NULL) {
+        previous = current;
+        current = current->next;
+    }
+
+    removedValue = current->data;
+
+    if (previous == NULL) {
+        *l = NULL;
+    } else {
+        previous->next = NULL;
+    }
+
+    free(current);
+
+    return removedValue;
+}
+
+elem list_remove_from_front(list_t *l) {
+  if (*l == NULL) {
+        return -1;
+    }
+
+    int removedValue;
+    list_t *temp = *l;
+
+    removedValue = temp->data;
+
+    *l = temp->next;
+
+    free(temp);
+
+    return removedValue;
+}
+
+elem list_remove_at_index(list_t *l, int index) {
+  if (*l == NULL || index < 0) {
+        return -1;
+    }
+
+    int removedValue;
+    list_t *current = *l;
+    list_t *previous = NULL;
+    int currentIndex = 0;
+
+    while (current != NULL && currentIndex < index) {
+        previous = current;
+        current = current->next;
+        currentIndex++;
+    }
+
+    if (current == NULL) {
+        return -1;
+    }
+
+    removedValue = current->data;
+
+    if (previous != NULL) {
+        previous->next = current->next;
+    } else {
+        *l = current->next;
+    }
+
+    free(current);
+
+    return removedValue;
+} 
+
+bool list_is_in(list_t *l, elem value) {
+  list_t *current = l;
+
+    while (current != NULL) {
+        if (current->data == value) {
+            return true;
+        }
+        current = current->next;
+    }
+
+    return false;
+}
+
+elem list_get_elem_at(list_t *l, int index) {
+  list_t *current = l;
+    int currentIndex = 0;
+
+    while (current != NULL && currentIndex < index) {
+        current = current->next;
+        currentIndex++;
+    }
+
+    if (current == NULL) {
+        return -1;
+    }
+
+    return current->data;
+}
+
+int list_get_index_of(list_t *l, elem value) {
+  list_t *current = l;
+    int currentIndex = 0;
+
+    while (current != NULL) {
+        if (current->data == value) {
+            return currentIndex;
+        }
+        current = current->next;
+        currentIndex++;
+    }
+
+    return -1;
+}
 
